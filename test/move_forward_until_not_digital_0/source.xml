@@ -1,0 +1,37 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables></variables>
+  <block type="control_repeat_until" id="^r{)W$jYYc_T)hwrU||s" x="360" y="1048">
+    <comment id="gtzoC%YkJ_9u$wpI$C[H" pinned="true" h="200" w="200" x="709" y="1060.333333333354" minimized="false">Move forward until digital(0) is false</comment>
+    <value name="CONDITION">
+      <block type="operator_not" id="|Fy9Zae,|=jD#!yKwL%T">
+        <value name="OPERAND">
+          <block type="digital_digital" id="z+apCBpVyP5s8W$f2V)E">
+            <value name="PORT">
+              <shadow type="math_number" id="u[42A+x*=K]OEF$BYK*f">
+                <field name="NUM">0</field>
+              </shadow>
+            </value>
+          </block>
+        </value>
+      </block>
+    </value>
+    <statement name="SUBSTACK">
+      <block type="motor_fd" id="~,$(i_MLNhjT2;5+s^69">
+        <value name="MOTOR">
+          <shadow type="math_number" id="#)v*?N3YF4py@NHgDcl?">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+    <next>
+      <block type="motor_off" id="sN)W-A11oetaS_VuBmP{">
+        <value name="MOTOR">
+          <shadow type="math_number" id="n[i1-jJ}yiP!^dR{gW)?">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+      </block>
+    </next>
+  </block>
+</xml>
