@@ -175,12 +175,15 @@ export namespace Ast {
     const root = source.documentElement;
 
     const variables: Variable[] = [];
-    find(root, 'variables').childNodes.forEach(node => {
-      if (node.nodeType !== Node.ELEMENT_NODE) return;
-      const element = node as Element;
-      if (element.nodeName !== 'variable') return;
-      variables.push(Variable.parse(element));
-    });
+    const variablesElement = find(root, 'variables');
+    if (variablesElement) {
+      variablesElement.childNodes.forEach(node => {
+        if (node.nodeType !== Node.ELEMENT_NODE) return;
+        const element = node as Element;
+        if (element.nodeName !== 'variable') return;
+        variables.push(Variable.parse(element));
+      });
+    }
 
     let controlRun: Element;
     for (let i = 0; i < root.childNodes.length; ++i) {
