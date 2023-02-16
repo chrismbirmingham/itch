@@ -177,18 +177,16 @@ export namespace Ast {
     const variables: Variable[] = [];
     const variablesElement = find(root, 'variables');
     if (variablesElement) {
-      variablesElement.childNodes.forEach(node => {
-        if (node.nodeType !== Node.ELEMENT_NODE) return;
-        const element = node as Element;
-        if (element.nodeName !== 'variable') return;
-        variables.push(Variable.parse(element));
-      });
+      for (let i = 0; i < variablesElement.childNodes.length; ++i) {
+        let node = variablesElement.childNodes[i] as Element;
+        if (node.nodeName !== 'variable') return;
+        variables.push(Variable.parse(node));
+      }
     }
 
     let controlRun: Element;
     for (let i = 0; i < root.childNodes.length; ++i) {
       const node = root.childNodes[i];
-      if (node.nodeType !== Node.ELEMENT_NODE) break;
       const element = node as Element;
 
       if (element.nodeName !== 'block' || element.getAttribute('type') !== 'control_run') continue;
@@ -196,6 +194,8 @@ export namespace Ast {
       if (controlRun !== undefined) throw new Error('Multiple control_run blocks found');
       controlRun = node as Element;
     }
+
+    if (!controlRun) throw new Error('control_run block not found');
 
     const block = Block.parse(controlRun);
     return { variables, block };
