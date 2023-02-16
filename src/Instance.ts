@@ -1,4 +1,4 @@
-import Ast, { Block, Shadow, Statement, Value } from './Ast';
+import Ast, { Block, Field, Shadow, Statement, Value } from './Ast';
 import { Module } from './Module';
 
 export interface InstanceIncompleteOptions {
@@ -8,6 +8,10 @@ export interface InstanceIncompleteOptions {
   source: XMLDocument;
 
   modules?: { [name: string]: Module };
+
+  show?: (name: string) => void;
+
+  hide?: (name: string) => void;
 }
 
 export namespace InstanceIncompleteOptions {
@@ -15,6 +19,8 @@ export namespace InstanceIncompleteOptions {
     return {
       source: Ast.parse(options.source),
       modules: options.modules || {},
+      show: options.show || (name => console.log('show', name)),
+      hide: options.hide || (name => console.log('hide', name)),
     };
   };
 }
@@ -23,41 +29,88 @@ export interface InstanceCompleteOptions {
   source: Ast;
 
   modules: { [name: string]: Module };
+
+  show: (name: string) => void;
+  hide: (name: string) => void;
 }
 
 export const RETURN_VALUE = '$$$RETURN_VALUE$$$';
 
-export interface DispatchContext {
-  readonly heap: Map<string, unknown>;
-  readonly values: { [name: string]: Value; };
-  readonly statements: { [name: string]: Statement; };
-  readonly execute: (block: Block) => unknown;
-  readonly resolve: (value: Value) => unknown;
+export class DispatchContext {
+  readonly instance: Instance;
+  readonly values: { [name: string]: Value; } = {};
+  readonly statements: { [name: string]: Statement; } = {};
+  readonly fields: { [name: string]: Field; } = {};
+
+  constructor(instance: Instance) {
+    this.instance = instance;
+  }
+
+  get show() { return this.instance.show; }
+  get hide() { return this.instance.hide; }
+  get heap() { return this.instance.heap; }
+
+  getValue(name: string) {
+    const ret = this.values[name];
+    if (!ret) throw new Error(`No value named ${name}`);
+    return ret;
+  }
+
+  getStatement(name: string) {
+    const ret = this.statements[name];
+    if (!ret) throw new Error(`No statement named ${name}`);
+    return ret;
+  }
+
+  getField(name: string) {
+    const ret = this.fields[name];
+    if (!ret) throw new Error(`No field named ${name}`);
+    return ret;
+  }
+
+  resolveValue(name: string) {
+    return this.instance.resolve(this.getValue(name));
+  }
+
+  resolveField(name: string) {
+    return this.heap[this.getField(name).name];
+  }
+}
+
+export interface InstanceError {
+  module: string;
+  function: string;
+  original: Error;
 }
 
 class Instance {
   private options_: InstanceCompleteOptions;
-  
   get options() { return this.options_; }
+
+  get source() { return this.options_.source; }
+  get modules() { return this.options_.modules; }
+  get show() { return this.options_.show; }
+  get hide() { return this.options_.hide; }
+
+  private heap_: Map<string, unknown> = new Map();
+  get heap() { return this.heap_; }
 
   constructor(options: InstanceIncompleteOptions) {
     this.options_ = InstanceIncompleteOptions.complete(options);
     for (const name in this.options_.modules) {
       this.registerModule(name, this.options_.modules[name]);
     }
-    console.log(this.options_.source);
   }
-
 
   private modules_: Map<string, Module> = new Map();
   readonly registerModule = (name: string, module: Module) => {
     this.modules_.set(name, module);
   };
 
-  private resolve_ = (value: Value): unknown => {
+  readonly resolve = (value: Value): unknown => {
     switch (value.child.t) {
       case 'block': {
-        return this.executeBlock_(value.child);
+        return this.execute(value.child);
       }
       case 'shadow': {
         return value.child.field.value;
@@ -65,15 +118,9 @@ class Instance {
     }
   };
 
-  private executeBlock_ = (block: Block): unknown => {
+  readonly execute = (block: Block): unknown => {
     console.log('executing', block.type, '...');
-    let context: DispatchContext = {
-      heap: this.heap_,
-      values: {},
-      statements: {},
-      execute: this.executeBlock_,
-      resolve: this.resolve_,
-    };
+    let context = new DispatchContext(this);
 
     for (const member of block.members) {
       switch (member.t) {
@@ -85,28 +132,45 @@ class Instance {
           context.statements[member.name] = member;
           break;
         }
+        case 'field': {
+          context.fields[member.name] = member;
+          break;
+        }
       }
     }
 
     const moduleName = block.type.split('_')[0];
     const module = this.modules_.get(moduleName);
     if (!module) throw new Error(`No module registered for block type ${moduleName}`);
-    const func = module[block.type.slice(moduleName.length + 1)];
+    const functionName = block.type.slice(moduleName.length + 1);
+    const func = module[functionName];
     if (!func) throw new Error(`No function registered for block type ${block.type}`);
-    const ret = func(context);
+
+    let ret: unknown;
+    try {
+      ret = func(context);
+    } catch (e) {
+      throw {
+        module: moduleName,
+        function: functionName,
+        original: e,
+      } as InstanceError;
+    }
+    
 
     if (block.next) {
       console.log('next block found, executing...');
-      this.executeBlock_(block.next);
+      this.execute(block.next);
     }
 
     return ret;
   }
 
-  private heap_: Map<string, unknown> = new Map();
-
   run() {
-    this.executeBlock_(this.options.source.block);
+    this.options.source.variables.forEach(variable => {
+      this.heap_.set(variable.name, undefined);
+    });
+    this.execute(this.options.source.block);
   }
 }
 

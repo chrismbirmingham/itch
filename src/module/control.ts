@@ -7,8 +7,56 @@ export default {
     if (!condition) throw new Error('CONDITION not found');
     const substack = context.statements['SUBSTACK'];
     if (!substack) throw new Error('SUBSTACK not found');
-    while (context.resolve(condition)) {
-      context.execute(substack.child);
+    while (context.instance.resolve(condition)) {
+      context.instance.execute(substack.child);
     }
-  }
+  },
+  repeat: (context: DispatchContext) => {
+    const times = context.values['TIMES'];
+    if (!times) throw new Error('TIMES not found');
+    const substack = context.statements['SUBSTACK'];
+    if (!substack) throw new Error('SUBSTACK not found');
+    for (let i = 0; i < context.instance.resolve(times); i++) {
+      context.instance.execute(substack.child);
+    }
+  },
+  if: (context: DispatchContext) => {
+    const condition = context.values['CONDITION'];
+    if (!condition) throw new Error('CONDITION not found');
+    const substack = context.statements['SUBSTACK'];
+    if (!substack) throw new Error('SUBSTACK not found');
+    if (context.instance.resolve(condition)) {
+      context.instance.execute(substack.child);
+    }
+  },
+  if_else: (context: DispatchContext) => {
+    const condition = context.values['CONDITION'];
+    if (!condition) throw new Error('CONDITION not found');
+    const substack = context.statements['SUBSTACK'];
+    if (!substack) throw new Error('SUBSTACK not found');
+    const substack2 = context.statements['SUBSTACK2'];
+    if (!substack2) throw new Error('SUBSTACK2 not found');
+    if (context.instance.resolve(condition)) {
+      context.instance.execute(substack.child);
+    } else {
+      context.instance.execute(substack2.child);
+    }
+  },
+  forever: (context: DispatchContext) => {
+    const substack = context.statements['SUBSTACK'];
+    if (!substack) throw new Error('SUBSTACK not found');
+    while (true) {
+      context.instance.execute(substack.child);
+    }
+  },
+  wait_until: (context: DispatchContext) => {
+    const condition = context.values['CONDITION'];
+    if (!condition) throw new Error('CONDITION not found');
+    while (!context.instance.resolve(condition)) {
+      // NOP
+    }
+  },
+  run: (context: DispatchContext) => {
+    // NOP
+  },
 } as Module;

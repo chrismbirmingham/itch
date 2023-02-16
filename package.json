@@ -2,6 +2,15 @@
   "name": "itch",
   "version": "1.0.0",
   "license": "AGPLv3",
+  "main": "./dist",
+  "files": [
+    "./dist/"
+  ],
+  "types": "./dist/index.d.ts",
+  "script": {
+    "build": "tsc",
+    "prepare": "yarn run build"
+  },
   "dependencies": {
     "xmldom": "^0.6.0"
   },

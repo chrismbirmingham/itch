@@ -4,6 +4,28 @@ const find = (element: Element, name: string): Element => {
   return ret;
 };
 
+export interface Variable {
+  t: 'variable';
+  name: string;
+  type: string;
+  id: string;
+  islocal: boolean;
+  iscloud: boolean;
+}
+
+export namespace Variable {
+  export const parse = (element: Element): Variable => {
+    return {
+      t: 'variable',
+      name: element.getAttribute('name') || '',
+      type: element.getAttribute('type') || '',
+      id: element.getAttribute('id') || '',
+      islocal: element.getAttribute('islocal') === 'true',
+      iscloud: element.getAttribute('iscloud') === 'true'
+    };
+  };
+}
+
 export interface Block {
   t: 'block';
   type: string;
@@ -43,15 +65,19 @@ export namespace Block {
 }
 
 export interface Field {
+  t: 'field';
   name: string;
   value: unknown;
+  variabletype?: string;
 }
 
 export namespace Field {
   export const parse = (element: Element): Field => {
     return {
+      t: 'field',
       name: element.getAttribute('name') || '',
-      value: element.textContent || ''
+      value: element.textContent || '',
+      variabletype: element.getAttribute('variabletype')
     };
   };
 }
@@ -126,27 +152,50 @@ export namespace Statement {
   };
 }
 
-export type Member = Value | Statement;
+export type Member = Value | Statement | Field;
 
 export namespace Member {
   export const parse = (element: Element): Member => {
     switch (element.nodeName) {
       case 'value': return Value.parse(element);
       case 'statement': return Statement.parse(element);
+      case 'field': return Field.parse(element);
       default: throw new Error(`Unexpected member type: ${element.nodeName}`);
     }
   };
 }
 
 export interface Ast {
+  variables: Variable[];
   block: Block;
 }
 
 export namespace Ast {
   export const parse = (source: XMLDocument): Ast => {
     const root = source.documentElement;
-    const block = Block.parse(find(root, 'block'));
-    return { block };
+
+    const variables: Variable[] = [];
+    find(root, 'variables').childNodes.forEach(node => {
+      if (node.nodeType !== Node.ELEMENT_NODE) return;
+      const element = node as Element;
+      if (element.nodeName !== 'variable') return;
+      variables.push(Variable.parse(element));
+    });
+
+    let controlRun: Element;
+    for (let i = 0; i < root.childNodes.length; ++i) {
+      const node = root.childNodes[i];
+      if (node.nodeType !== Node.ELEMENT_NODE) break;
+      const element = node as Element;
+
+      if (element.nodeName !== 'block' || element.getAttribute('type') !== 'control_run') continue;
+
+      if (controlRun !== undefined) throw new Error('Multiple control_run blocks found');
+      controlRun = node as Element;
+    }
+
+    const block = Block.parse(controlRun);
+    return { variables, block };
   };
 }
 
