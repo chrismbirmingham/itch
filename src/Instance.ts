@@ -78,9 +78,16 @@ export class DispatchContext {
 }
 
 export interface InstanceError {
+  t: 'instance-error';
   module: string;
   function: string;
   original: Error;
+}
+
+export namespace InstanceError {
+  export const is = (value: unknown): value is InstanceError => {
+    return typeof value === 'object' && value !== null && value['t'] === 'instance-error';
+  };
 }
 
 class Instance {
@@ -168,7 +175,7 @@ class Instance {
 
   run() {
     console.log('running instance...', this.options_);
-    
+
     for (const variable of this.options_.source.variables || []) {
       this.heap_.set(variable.name, undefined);
     }
