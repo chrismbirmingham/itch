@@ -1,52 +1,44 @@
 import { DispatchContext, RETURN_VALUE } from '../Instance';
 import { Module } from '../Module';
+import { toNumber } from '../util';
 
 export default {
   add: (ctx: DispatchContext) => {
-    const num1 = ctx.resolveValue('NUM1');
-    const num2 = ctx.resolveValue('NUM2');
+    const num1 = toNumber(ctx.resolveValue('NUM1'));
+    const num2 = toNumber(ctx.resolveValue('NUM2'));
 
-    if (typeof num1 === 'string' && typeof num2 === 'string') return num1 + num2;
-    if (typeof num1 === 'number' && typeof num2 === 'number') return num1 + num2;
-    if (typeof num1 === 'string' && typeof num2 === 'number') return num1 + num2;
-    if (typeof num1 === 'number' && typeof num2 === 'string') return num1 + num2;
-
-    throw new Error('Invalid operand type');
+    return num1 + num2;
   },
   subtract: (ctx: DispatchContext) => {
-    const num1 = ctx.resolveValue('NUM1');
-    const num2 = ctx.resolveValue('NUM2');
+    const num1 = toNumber(ctx.resolveValue('NUM1'));
+    const num2 = toNumber(ctx.resolveValue('NUM2'));
 
-    if (typeof num1 === 'number' && typeof num2 === 'number') return num1 - num2;
-    throw new Error('Invalid operand type');
+    return num1 - num2;
   },
   multiply: (ctx: DispatchContext) => {
-    const num1 = ctx.resolveValue('NUM1');
-    const num2 = ctx.resolveValue('NUM2');
+    const num1 = toNumber(ctx.resolveValue('NUM1'));
+    const num2 = toNumber(ctx.resolveValue('NUM2'));
     
-    if (typeof num1 === 'number' && typeof num2 === 'number') return num1 * num2;
-    throw new Error('Invalid operand type');
+    return num1 * num2;
   },
   divide: (ctx: DispatchContext) => {
-    const num1 = ctx.resolveValue('NUM1');
-    const num2 = ctx.resolveValue('NUM2');
+    const num1 = toNumber(ctx.resolveValue('NUM1'));
+    const num2 = toNumber(ctx.resolveValue('NUM2'));
 
-    if (typeof num1 === 'number' && typeof num2 === 'number') return num1 / num2;
-    throw new Error('Invalid operand type');
+    return num1 / num2;
   },
   random: (ctx: DispatchContext) => {
-    const from = ctx.resolveValue('FROM');
-    const to = ctx.resolveValue('TO');
+    const from = toNumber(ctx.resolveValue('FROM'));
+    const to = toNumber(ctx.resolveValue('TO'));
 
     if (typeof from === 'number' && typeof to === 'number') return Math.floor(Math.random() * (to - from + 1)) + from;
     throw new Error('Invalid operand type');
   },
   lt: (ctx: DispatchContext) => {
-    const num1 =  ctx.resolveValue('OPERAND1');
-    const num2 =  ctx.resolveValue('OPERAND2');
+    const num1 = toNumber(ctx.resolveValue('OPERAND1'));
+    const num2 = toNumber(ctx.resolveValue('OPERAND2'));
 
-    if (typeof num1 === 'number' && typeof num2 === 'number') return num1 < num2;
-    throw new Error('Invalid operand type');
+    return num1 < num2;
   },
   eq: (ctx: DispatchContext) => {
     const num1 = ctx.resolveValue('OPERAND1');
@@ -57,11 +49,10 @@ export default {
     throw new Error('Invalid operand type');
   },
   gt: (ctx: DispatchContext) => {
-    const num1 = ctx.resolveValue('OPERAND1');
-    const num2 = ctx.resolveValue('OPERAND2');
+    const num1 = toNumber(ctx.resolveValue('OPERAND1'));
+    const num2 = toNumber(ctx.resolveValue('OPERAND2'));
 
-    if (typeof num1 === 'number' && typeof num2 === 'number') return num1 > num2;
-    throw new Error('Invalid operand type');
+    return num1 > num2;
   },
   and: (ctx: DispatchContext) => {
     const num1 = ctx.resolveValue('OPERAND1');
@@ -131,34 +122,20 @@ export default {
     throw new Error('Invalid operand type');
   },
   mod: (context: DispatchContext) => {
-    const operand1 = context.values['NUM1'];
-    if (!operand1) throw new Error('NUM1 not found');
-    const operand2 = context.values['NUM2'];
-    if (!operand2) throw new Error('NUM2 not found');
+    const num1 = toNumber(context.resolveValue('NUM1'));
+    const num2 = toNumber(context.resolveValue('NUM2'));
 
-    const num1 = context.instance.resolve(operand1);
-    const num2 = context.instance.resolve(operand2);
-
-    if (typeof num1 === 'number' && typeof num2 === 'number') return num1 % num2;
-    throw new Error('Invalid operand type');
+    return num1 % num2;
   },
-  round: (context: DispatchContext) => {
-    const operand = context.values['NUM'];
-    if (!operand) throw new Error('NUM not found');
-    const num = context.instance.resolve(operand);
-    if (typeof num === 'number') return Math.round(num);
-    throw new Error('Invalid operand type');
-  },
+  round: (context: DispatchContext) => Math.round(toNumber(context.resolveValue('NUM'))),
   mathop: (context: DispatchContext) => {
-    const num = context.values['NUM'];
-    if (!num) throw new Error('NUM not found');
+    const n = toNumber(context.resolveValue('NUM'));
     const operator = context.values['OPERATOR'];
     if (!operator) throw new Error('OPERATOR not found');
 
-    const n = context.instance.resolve(num);
     const op = context.instance.resolve(operator);
 
-    if (typeof n !== 'number' || typeof op !== 'string') throw new Error('Invalid operand type');
+    if (typeof op !== 'string') throw new Error('Invalid operand type');
 
     switch (op) {
       case 'abs': return Math.abs(n);

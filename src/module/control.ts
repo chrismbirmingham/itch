@@ -1,5 +1,6 @@
 import { DispatchContext, RETURN_VALUE } from '../Instance';
 import { Module } from '../Module';
+import { toNumber } from '../util';
 
 export default {
   repeat_until: (context: DispatchContext) => {
@@ -12,11 +13,10 @@ export default {
     }
   },
   repeat: (context: DispatchContext) => {
-    const times = context.values['TIMES'];
-    if (!times) throw new Error('TIMES not found');
+    const times = toNumber(context.resolveValue('TIMES'));
     const substack = context.statements['SUBSTACK'];
     if (!substack) throw new Error('SUBSTACK not found');
-    for (let i = 0; i < context.instance.resolve(times); i++) {
+    for (let i = 0; i < times; i++) {
       context.instance.execute(substack.child);
     }
   },

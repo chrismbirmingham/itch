@@ -1,5 +1,6 @@
 import { DispatchContext } from '../Instance';
 import { Module } from '../Module';
+import { toNumber } from '../util';
 
 export default {
   variable: (ctx: DispatchContext) => ctx.resolveField('VARIABLE'),
@@ -9,7 +10,7 @@ export default {
   hidelist: (ctx: DispatchContext) => ctx.hide(ctx.getField('LIST').name),
   itemoflist: (ctx: DispatchContext) => {
     const list = ctx.resolveField('LIST');
-    const index = ctx.resolveValue('INDEX');
+    const index = toNumber(ctx.resolveValue('INDEX'));
 
     if (typeof index !== 'number') throw new Error('INDEX must be number');
     if (!Array.isArray(list)) throw new Error('LIST must be array');
@@ -41,7 +42,7 @@ export default {
   },
   deleteoflist: (ctx: DispatchContext) => {
     const list = ctx.resolveField('LIST');
-    const index = ctx.resolveValue('INDEX');
+    const index = toNumber(ctx.resolveValue('INDEX'));
 
     if (typeof index !== 'number') throw new Error('INDEX must be number');
 
@@ -51,7 +52,7 @@ export default {
   },
   insertatlist: (ctx: DispatchContext) => {
     const list = ctx.resolveField('LIST');
-    const index = ctx.resolveValue('INDEX');
+    const index = toNumber(ctx.resolveValue('INDEX'));
     const item = ctx.resolveValue('ITEM');
 
     if (typeof index !== 'number') throw new Error('INDEX must be number');
@@ -62,7 +63,7 @@ export default {
   },
   changevariableby: (ctx: DispatchContext) => {
     const variable = ctx.getField('VARIABLE');
-    const value = ctx.resolveValue('VALUE');
+    const value = toNumber(ctx.resolveValue('VALUE'));
 
     if (typeof value !== 'number') throw new Error('VALUE must be number');
     if (typeof variable.value !== 'number') throw new Error('VARIABLE must be number')
