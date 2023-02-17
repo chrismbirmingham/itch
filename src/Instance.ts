@@ -168,6 +168,7 @@ class Instance {
 
   run() {
     console.log('running instance...', this.options_);
+    
     for (const variable of this.options_.source.variables || []) {
       this.heap_.set(variable.name, undefined);
     }

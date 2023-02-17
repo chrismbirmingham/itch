@@ -179,7 +179,7 @@ export namespace Ast {
     if (variablesElement) {
       for (let i = 0; i < variablesElement.childNodes.length; ++i) {
         let node = variablesElement.childNodes[i] as Element;
-        if (node.nodeName !== 'variable') return;
+        if (node.nodeName !== 'variable') continue;
         variables.push(Variable.parse(node));
       }
     }
