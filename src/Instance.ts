@@ -126,7 +126,6 @@ class Instance {
   };
 
   readonly execute = (block: Block): unknown => {
-    console.log('executing', block.type, '...');
     let context = new DispatchContext(this);
 
     for (const member of block.members) {
@@ -167,7 +166,6 @@ class Instance {
     
 
     if (block.next) {
-      console.log('next block found, executing...');
       this.execute(block.next);
     }
 
@@ -175,7 +173,6 @@ class Instance {
   }
 
   run() {
-    console.log('running instance...', this.options_);
 
     for (const variable of this.options_.source.variables || []) {
       this.heap_.set(variable.name, undefined);
