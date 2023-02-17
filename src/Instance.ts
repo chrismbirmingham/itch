@@ -167,9 +167,9 @@ class Instance {
   }
 
   run() {
-    this.options.source.variables.forEach(variable => {
+    for (const variable of this.options.source.variables || []) {
       this.heap_.set(variable.name, undefined);
-    });
+    }
     this.execute(this.options.source.block);
   }
 }
