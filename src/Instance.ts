@@ -161,6 +161,7 @@ class Instance {
         module: moduleName,
         function: functionName,
         original: e,
+        t: 'instance-error',
       } as InstanceError;
     }
     
