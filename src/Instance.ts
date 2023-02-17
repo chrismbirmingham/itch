@@ -167,10 +167,11 @@ class Instance {
   }
 
   run() {
-    for (const variable of this.options.source.variables || []) {
+    console.log('running instance...', this.options_);
+    for (const variable of this.options_.source.variables || []) {
       this.heap_.set(variable.name, undefined);
     }
-    this.execute(this.options.source.block);
+    this.execute(this.options_.source.block);
   }
 }
 
