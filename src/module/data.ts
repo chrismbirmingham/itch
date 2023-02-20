@@ -69,6 +69,11 @@ export default {
     if (typeof variable.value !== 'number') throw new Error('VARIABLE must be number')
 
     ctx.heap.set(variable.name, variable.value + value);
-  }
+  },
+  setvariableto: (ctx: DispatchContext) => {
+    const variable = ctx.getField('VARIABLE');
+    const value = ctx.resolveValue('VALUE');
 
+    ctx.heap.set(variable.name, value);
+  }
 } as Module;
