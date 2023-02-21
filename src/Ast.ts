@@ -191,11 +191,11 @@ export namespace Ast {
 
       if (element.nodeName !== 'block' || element.getAttribute('type') !== 'control_run') continue;
 
-      if (controlRun !== undefined) throw new Error('Multiple control_run blocks found');
+      if (controlRun !== undefined) throw new Error('Multiple Control -> "when program starts" (control_run) blocks found. Only one is supported.');
       controlRun = node as Element;
     }
 
-    if (!controlRun) throw new Error('control_run block not found');
+    if (!controlRun) throw new Error('Control -> "when program starts" (control_run) block not found');
 
     const block = Block.parse(controlRun);
     return { variables, block };

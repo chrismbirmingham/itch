@@ -7,7 +7,10 @@ export default {
     const condition = context.values['CONDITION'];
     if (!condition) throw new Error('CONDITION not found');
     const substack = context.statements['SUBSTACK'];
-    if (!substack) throw new Error('SUBSTACK not found');
+    if (!substack) {
+      while (context.instance.resolve(condition));
+      return;
+    }
     while (context.instance.resolve(condition)) {
       context.instance.execute(substack.child);
     }
@@ -15,7 +18,7 @@ export default {
   repeat: (context: DispatchContext) => {
     const times = toNumber(context.resolveValue('TIMES'));
     const substack = context.statements['SUBSTACK'];
-    if (!substack) throw new Error('SUBSTACK not found');
+    if (!substack) return;
     for (let i = 0; i < times; i++) {
       context.instance.execute(substack.child);
     }
@@ -24,7 +27,7 @@ export default {
     const condition = context.values['CONDITION'];
     if (!condition) throw new Error('CONDITION not found');
     const substack = context.statements['SUBSTACK'];
-    if (!substack) throw new Error('SUBSTACK not found');
+    if (!substack) throw new Error('if blocks (SUBSTACK) not found');
     if (context.instance.resolve(condition)) {
       context.instance.execute(substack.child);
     }
@@ -33,9 +36,9 @@ export default {
     const condition = context.values['CONDITION'];
     if (!condition) throw new Error('CONDITION not found');
     const substack = context.statements['SUBSTACK'];
-    if (!substack) throw new Error('SUBSTACK not found');
+    if (!substack) throw new Error('if blocks (SUBSTACK) not found');
     const substack2 = context.statements['SUBSTACK2'];
-    if (!substack2) throw new Error('SUBSTACK2 not found');
+    if (!substack2) throw new Error('else blocks (SUBSTACK2) not found');
     if (context.instance.resolve(condition)) {
       context.instance.execute(substack.child);
     } else {
@@ -44,7 +47,7 @@ export default {
   },
   forever: (context: DispatchContext) => {
     const substack = context.statements['SUBSTACK'];
-    if (!substack) throw new Error('SUBSTACK not found');
+    if (!substack) for (;;);
     while (true) {
       context.instance.execute(substack.child);
     }
