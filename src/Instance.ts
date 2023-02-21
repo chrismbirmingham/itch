@@ -140,7 +140,7 @@ class Instance {
   readonly execute = (block: Block): unknown => {
     let context = new DispatchContext(this);
 
-    console.log('executing', block);
+    if (block.type === 'control_run') console.log('executing', block);
 
     for (const member of block.members) {
       switch (member.t) {
@@ -184,6 +184,7 @@ class Instance {
     }
     
 
+    if (block.type === 'control_run') console.log('next', block.next);
     if (block.next) {
       this.execute(block.next);
     }
