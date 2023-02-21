@@ -140,6 +140,8 @@ class Instance {
   readonly execute = (block: Block): unknown => {
     let context = new DispatchContext(this);
 
+    console.log('executing', block);
+
     for (const member of block.members) {
       switch (member.t) {
         case 'value': {
