@@ -145,6 +145,8 @@ class Instance {
       }
     }
 
+    console.log('context', context);
+
     const moduleName = block.type.split('_')[0];
     const module = this.modules_.get(moduleName);
     if (!module) throw new Error(`No module registered for block type ${moduleName}`);
