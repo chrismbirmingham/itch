@@ -105,12 +105,24 @@ class Instance {
   constructor(options: InstanceIncompleteOptions) {
     this.options_ = InstanceIncompleteOptions.complete(options);
     for (const name in this.options_.modules) {
-      this.registerModule(name, this.options_.modules[name]);
+      this.registerModule_(name, this.options_.modules[name]);
     }
+    this.updateSortedModuleNames_();
   }
 
   private modules_: Map<string, Module> = new Map();
+  private sortedModuleNames_: string[] = [];
+  private updateSortedModuleNames_() {
+    this.sortedModuleNames_ = [...this.modules_.keys()];
+    this.sortedModuleNames_.sort((a, b) => b.length - a.length);
+  }
+  
   readonly registerModule = (name: string, module: Module) => {
+    this.registerModule_(name, module);
+    this.updateSortedModuleNames_();
+  };
+
+  private readonly registerModule_ = (name: string, module: Module) => {
     this.modules_.set(name, module);
   };
 
@@ -145,9 +157,14 @@ class Instance {
       }
     }
 
-    console.log('context', context);
+    console.log(block, 'context', context);
 
-    const moduleName = block.type.split('_')[0];
+    let moduleName: string;
+    for (const module of this.sortedModuleNames_) {
+      if (!block.type.startsWith(module + '_')) break;
+      moduleName = module;
+    }
+
     const module = this.modules_.get(moduleName);
     if (!module) throw new Error(`No module registered for block type ${moduleName}`);
     const functionName = block.type.slice(moduleName.length + 1);
