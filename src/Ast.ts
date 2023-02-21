@@ -44,7 +44,7 @@ export namespace Block {
     const memberNodes = [];
     for (let i = 0; i < element.childNodes.length; i++) {
       const node = element.childNodes[i];
-      if (node.nodeName !== 'value' && node.nodeName !== 'statement') continue;
+      if (node.nodeName !== 'value' && node.nodeName !== 'statement' && node.nodeName !== 'field') continue;
       memberNodes.push(node);
     }
 
