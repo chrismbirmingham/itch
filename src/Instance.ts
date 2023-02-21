@@ -9,9 +9,9 @@ export interface InstanceIncompleteOptions {
 
   modules?: { [name: string]: Module };
 
-  show?: (name: string) => void;
+  show?: (ctx: DispatchContext, name: string) => void;
 
-  hide?: (name: string) => void;
+  hide?: (ctx: DispatchContext, name: string) => void;
 }
 
 export namespace InstanceIncompleteOptions {
@@ -19,8 +19,8 @@ export namespace InstanceIncompleteOptions {
     return {
       source: Ast.parse(options.source),
       modules: options.modules || {},
-      show: options.show || (name => console.log('show', name)),
-      hide: options.hide || (name => console.log('hide', name)),
+      show: options.show || ((ctx, name) => console.log('show', name, ctx.instance.heap.get(name))),
+      hide: options.hide || ((ctx, name) => console.log('hide', name, ctx.instance.heap.get(name))),
     };
   };
 }
@@ -30,8 +30,8 @@ export interface InstanceCompleteOptions {
 
   modules: { [name: string]: Module };
 
-  show: (name: string) => void;
-  hide: (name: string) => void;
+  show: (ctx: DispatchContext, name: string) => void;
+  hide: (ctx: DispatchContext, name: string) => void;
 }
 
 export const RETURN_VALUE = '$$$RETURN_VALUE$$$';
@@ -156,8 +156,6 @@ class Instance {
         }
       }
     }
-
-    console.log(block, 'context', context);
 
     let moduleName: string;
     for (const module of this.sortedModuleNames_) {

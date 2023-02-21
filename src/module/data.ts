@@ -4,10 +4,10 @@ import { toNumber } from '../util';
 
 export default {
   variable: (ctx: DispatchContext) => ctx.resolveField('VARIABLE'),
-  showvariable: (ctx: DispatchContext) => ctx.show(ctx.getField('VARIABLE').name),
-  hidevariable: (ctx: DispatchContext) => ctx.hide(ctx.getField('VARIABLE').name),
-  showlist: (ctx: DispatchContext) => ctx.show(ctx.getField('LIST').name),
-  hidelist: (ctx: DispatchContext) => ctx.hide(ctx.getField('LIST').name),
+  showvariable: (ctx: DispatchContext) => ctx.show(ctx, ctx.getField('VARIABLE').name),
+  hidevariable: (ctx: DispatchContext) => ctx.hide(ctx, ctx.getField('VARIABLE').name),
+  showlist: (ctx: DispatchContext) => ctx.show(ctx, ctx.getField('LIST').name),
+  hidelist: (ctx: DispatchContext) => ctx.hide(ctx, ctx.getField('LIST').name),
   itemoflist: (ctx: DispatchContext) => {
     const list = ctx.resolveField('LIST');
     const index = toNumber(ctx.resolveValue('INDEX'));
