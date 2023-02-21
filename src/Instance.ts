@@ -161,7 +161,7 @@ class Instance {
 
     let moduleName: string;
     for (const module of this.sortedModuleNames_) {
-      if (!block.type.startsWith(module + '_')) break;
+      if (!block.type.startsWith(module + '_')) continue;
       moduleName = module;
     }
 
