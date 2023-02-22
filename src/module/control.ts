@@ -11,9 +11,11 @@ export default {
       while (context.instance.resolve(condition));
       return;
     }
+    console.log('repeat_until start', condition, substack);
     while (context.instance.resolve(condition)) {
       context.instance.execute(substack.child);
     }
+    console.log('repeat_until end');
   },
   repeat: (context: DispatchContext) => {
     const times = toNumber(context.resolveValue('TIMES'));
