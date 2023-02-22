@@ -42,18 +42,17 @@ export namespace Block {
   export const parse = (element: Element): Block => {
     
     const memberNodes = [];
+    let next: Block;
     for (let i = 0; i < element.childNodes.length; i++) {
       const node = element.childNodes[i];
+      if (node.nodeName === 'next') {
+        next = Block.parse(find(node as Element, 'block'));
+        continue;
+      }
       if (node.nodeName !== 'value' && node.nodeName !== 'statement' && node.nodeName !== 'field') continue;
       memberNodes.push(node);
     }
 
-    const nextElement = element.getElementsByTagName('next')[0];
-    let next: Block;
-    if (nextElement !== undefined) {
-      next = Block.parse(find(nextElement, 'block'));
-    }
-    
     return {
       t: 'block',
       type: element.getAttribute('type') || '',
