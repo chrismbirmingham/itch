@@ -140,7 +140,7 @@ class Instance {
   readonly execute = (block: Block): unknown => {
     let context = new DispatchContext(this);
 
-    if (block.type === 'control_run') console.log('executing', block);
+    if (block.type === 'control_repeat_until') console.log('executing', block);
 
     for (const member of block.members) {
       switch (member.t) {
@@ -175,6 +175,7 @@ class Instance {
     try {
       ret = func(context);
     } catch (e) {
+      console.log('instance error', e);
       throw {
         module: moduleName,
         function: functionName,
@@ -184,7 +185,7 @@ class Instance {
     }
     
 
-    if (block.type === 'control_run') console.log('next', block.next);
+    if (block.type === 'control_repeat_until') console.log('next', block.next);
     if (block.next) {
       this.execute(block.next);
     }
