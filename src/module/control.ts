@@ -11,11 +11,9 @@ export default {
       while (context.instance.resolve(condition));
       return;
     }
-    console.log('repeat_until start', condition, substack);
-    while (context.instance.resolve(condition)) {
+    while (!context.instance.resolve(condition)) {
       context.instance.execute(substack.child);
     }
-    console.log('repeat_until end');
   },
   repeat: (context: DispatchContext) => {
     const times = toNumber(context.resolveValue('TIMES'));
@@ -29,22 +27,19 @@ export default {
     const condition = context.values['CONDITION'];
     if (!condition) throw new Error('CONDITION not found');
     const substack = context.statements['SUBSTACK'];
-    if (!substack) throw new Error('if blocks (SUBSTACK) not found');
     if (context.instance.resolve(condition)) {
-      context.instance.execute(substack.child);
+      if (substack) context.instance.execute(substack.child);
     }
   },
   if_else: (context: DispatchContext) => {
     const condition = context.values['CONDITION'];
     if (!condition) throw new Error('CONDITION not found');
     const substack = context.statements['SUBSTACK'];
-    if (!substack) throw new Error('if blocks (SUBSTACK) not found');
     const substack2 = context.statements['SUBSTACK2'];
-    if (!substack2) throw new Error('else blocks (SUBSTACK2) not found');
     if (context.instance.resolve(condition)) {
-      context.instance.execute(substack.child);
+      if (substack) context.instance.execute(substack.child);
     } else {
-      context.instance.execute(substack2.child);
+      if (substack2) context.instance.execute(substack2.child);
     }
   },
   forever: (context: DispatchContext) => {

@@ -31,8 +31,10 @@ export default {
     const from = toNumber(ctx.resolveValue('FROM'));
     const to = toNumber(ctx.resolveValue('TO'));
 
-    if (typeof from === 'number' && typeof to === 'number') return Math.floor(Math.random() * (to - from + 1)) + from;
-    throw new Error('Invalid operand type');
+    if (typeof from !== 'number' && typeof to !== 'number') throw new Error('Invalid operand type');
+    if (from >= to) throw new Error('FROM must be less than TO');
+
+    return Math.floor(Math.random() * (to - from + 1)) + from;
   },
   lt: (ctx: DispatchContext) => {
     const num1 = toNumber(ctx.resolveValue('OPERAND1'));
@@ -40,7 +42,7 @@ export default {
 
     return num1 < num2;
   },
-  eq: (ctx: DispatchContext) => {
+  equals: (ctx: DispatchContext) => {
     const num1 = ctx.resolveValue('OPERAND1');
     const num2 = ctx.resolveValue('OPERAND2');
 
