@@ -130,14 +130,11 @@ export default {
   round: (context: DispatchContext) => Math.round(toNumber(context.resolveValue('NUM'))),
   mathop: (context: DispatchContext) => {
     const n = toNumber(context.resolveValue('NUM'));
-    const operator = context.resolveField('OPERATOR');
+    const operator = context.getField('OPERATOR').value;
     if (!operator) throw new Error('OPERATOR not found');
+    if (typeof operator !== 'string') throw new Error('Invalid operand type');
 
-    const op = context.instance.resolve(operator);
-
-    if (typeof op !== 'string') throw new Error('Invalid operand type');
-
-    switch (op) {
+    switch (operator) {
       case 'abs': return Math.abs(n);
       case 'floor': return Math.floor(n);
       case 'ceiling': return Math.ceil(n);
