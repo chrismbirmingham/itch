@@ -130,7 +130,7 @@ export default {
   round: (context: DispatchContext) => Math.round(toNumber(context.resolveValue('NUM'))),
   mathop: (context: DispatchContext) => {
     const n = toNumber(context.resolveValue('NUM'));
-    const operator = context.values['OPERATOR'];
+    const operator = context.resolveField('OPERATOR');
     if (!operator) throw new Error('OPERATOR not found');
 
     const op = context.instance.resolve(operator);
