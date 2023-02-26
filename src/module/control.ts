@@ -59,4 +59,13 @@ export default {
   run: (context: DispatchContext) => {
     // NOP
   },
+  wait: (context: DispatchContext) => {
+    const time = toNumber(context.resolveValue('DURATION')) * 1000;
+    if (time <= 0) return;
+    
+    const start = Date.now();
+    while (Date.now() - start < time) {
+      // NOP
+    }
+  }
 } as Module;
