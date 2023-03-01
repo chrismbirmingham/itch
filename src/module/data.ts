@@ -3,7 +3,7 @@ import { Module } from '../Module';
 import { toNumber } from '../util';
 
 export default {
-  variable: (ctx: DispatchContext) => ctx.resolveField('VARIABLE'),
+  variable: (ctx: DispatchContext) => ctx.heap.get(ctx.getField('VARIABLE').name),
   showvariable: (ctx: DispatchContext) => ctx.show(ctx, ctx.getField('VARIABLE').name),
   hidevariable: (ctx: DispatchContext) => ctx.hide(ctx, ctx.getField('VARIABLE').name),
   showlist: (ctx: DispatchContext) => ctx.show(ctx, ctx.getField('LIST').name),
@@ -66,9 +66,11 @@ export default {
     const value = toNumber(ctx.resolveValue('VALUE'));
 
     if (typeof value !== 'number') throw new Error('VALUE must be number');
-    if (typeof variable.value !== 'number') throw new Error('VARIABLE must be number')
 
-    ctx.heap.set(variable.name, variable.value + value);
+    const currentValue = ctx.heap.get(variable.name);
+    if (typeof currentValue !== 'number') throw new Error('VARIABLE must be number')
+
+    ctx.heap.set(variable.name, currentValue + value);
   },
   setvariableto: (ctx: DispatchContext) => {
     const variable = ctx.getField('VARIABLE');

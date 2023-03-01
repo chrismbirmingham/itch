@@ -7,12 +7,8 @@ export default {
     const condition = context.values['CONDITION'];
     if (!condition) throw new Error('CONDITION not found');
     const substack = context.statements['SUBSTACK'];
-    if (!substack) {
-      while (context.instance.resolve(condition));
-      return;
-    }
     while (!context.instance.resolve(condition)) {
-      context.instance.execute(substack.child);
+      if (substack) context.instance.execute(substack.child);
     }
   },
   repeat: (context: DispatchContext) => {

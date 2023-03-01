@@ -92,17 +92,12 @@ export default {
     if (typeof str1 === 'string' && typeof str2 === 'string') return str1 + str2;
     throw new Error('Invalid operand type');
   },
-  letter_of: (context: DispatchContext) => {
-    const string = context.values['STRING'];
-    if (!string) throw new Error('STRING not found');
-    const letter = context.values['LETTER'];
-    if (!letter) throw new Error('LETTER not found');
+  letter_of: (ctx: DispatchContext) => {
+    const string = ctx.resolveValue('STRING');
+    const letter = toNumber(ctx.resolveValue('LETTER'));
 
-    const str = context.instance.resolve(string);
-    const idx = context.instance.resolve(letter);
-
-    if (typeof str === 'string' && typeof idx === 'number') return str[idx];
-    throw new Error('Invalid operand type');
+    if (typeof string === 'string' && typeof letter === 'number') return string[letter];
+    throw new Error(`Invalid operand type ${typeof string} ${typeof letter}`);
   },
   length: (context: DispatchContext) => {
     const string = context.values['STRING'];
