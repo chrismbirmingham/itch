@@ -3,11 +3,11 @@ import { Module } from '../Module';
 import { toNumber } from '../util';
 
 export default {
-  variable: (ctx: DispatchContext) => ctx.heap.get(ctx.getField('VARIABLE').name),
-  showvariable: (ctx: DispatchContext) => ctx.show(ctx, ctx.getField('VARIABLE').name),
-  hidevariable: (ctx: DispatchContext) => ctx.hide(ctx, ctx.getField('VARIABLE').name),
-  showlist: (ctx: DispatchContext) => ctx.show(ctx, ctx.getField('LIST').name),
-  hidelist: (ctx: DispatchContext) => ctx.hide(ctx, ctx.getField('LIST').name),
+  variable: (ctx: DispatchContext) => ctx.heap.get(ctx.getField('VARIABLE').value as string),
+  showvariable: (ctx: DispatchContext) => ctx.show(ctx, ctx.getField('VARIABLE').value as string),
+  hidevariable: (ctx: DispatchContext) => ctx.hide(ctx, ctx.getField('VARIABLE').value as string),
+  showlist: (ctx: DispatchContext) => ctx.show(ctx, ctx.getField('LIST').value as string),
+  hidelist: (ctx: DispatchContext) => ctx.hide(ctx, ctx.getField('LIST').value as string),
   itemoflist: (ctx: DispatchContext) => {
     const list = ctx.resolveField('LIST');
     const index = toNumber(ctx.resolveValue('INDEX'));
