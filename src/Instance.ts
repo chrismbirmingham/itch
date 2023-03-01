@@ -12,6 +12,8 @@ export interface InstanceIncompleteOptions {
   show?: (ctx: DispatchContext, name: string) => void;
 
   hide?: (ctx: DispatchContext, name: string) => void;
+
+  tick?: (ctx: DispatchContext) => void;
 }
 
 export namespace InstanceIncompleteOptions {
@@ -21,6 +23,7 @@ export namespace InstanceIncompleteOptions {
       modules: options.modules || {},
       show: options.show || ((ctx, name) => console.log('show', name, ctx.instance.heap.get(name))),
       hide: options.hide || ((ctx, name) => console.log('hide', name, ctx.instance.heap.get(name))),
+      tick: options.tick,
     };
   };
 }
@@ -32,6 +35,7 @@ export interface InstanceCompleteOptions {
 
   show: (ctx: DispatchContext, name: string) => void;
   hide: (ctx: DispatchContext, name: string) => void;
+  tick?: (ctx: DispatchContext) => void;
 }
 
 export const RETURN_VALUE = '$$$RETURN_VALUE$$$';
@@ -140,8 +144,6 @@ class Instance {
   readonly execute = (block: Block): unknown => {
     let context = new DispatchContext(this);
 
-    if (block.type === 'control_repeat_until') console.log('executing', block);
-
     for (const member of block.members) {
       switch (member.t) {
         case 'value': {
@@ -170,6 +172,7 @@ class Instance {
     const functionName = block.type.slice(moduleName.length + 1);
     const func = module[functionName];
     if (!func) throw new Error(`No function registered for block type ${block.type}`);
+    
 
     let ret: unknown;
     try {
@@ -183,9 +186,8 @@ class Instance {
         t: 'instance-error',
       } as InstanceError;
     }
-    
+    this.options_.tick?.(context);
 
-    if (block.type === 'control_repeat_until') console.log('next', block.next);
     if (block.next) {
       this.execute(block.next);
     }
