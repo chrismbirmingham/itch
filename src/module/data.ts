@@ -67,10 +67,10 @@ export default {
 
     if (typeof value !== 'number') throw new Error('VALUE must be number');
 
-    const currentValue = ctx.heap.get(variable.value as string);
-    if (typeof currentValue !== 'number') throw new Error('VARIABLE must be number')
+    const currentValue = ctx.heap.get(variable.value as string) as string;
+    // if (typeof currentValue !== 'number') throw new Error('VARIABLE must be number')
 
-    ctx.heap.set(variable.name, currentValue + value);
+    ctx.heap.set(variable.name, Number(currentValue) + value);
   },
   setvariableto: (ctx: DispatchContext) => {
     const variable = ctx.getField('VARIABLE');
