@@ -64,15 +64,18 @@ export default {
   changevariableby: (ctx: DispatchContext) => {
     const variable = ctx.getField('VARIABLE');
     const value = toNumber(ctx.resolveValue('VALUE'));
-    console.log("variable", variable, "value", value)
+    // console.log("variable", variable, "value", value)
 
     if (typeof value !== 'number') throw new Error('VALUE must be number');
 
     const currentValue = ctx.heap.get(variable.value as string) as string;
-    console.log("currentValue", currentValue)
+    // console.log("currentValue", currentValue)
+    const newValue = Number(currentValue) + value;
+    // console.log("newValue is", newValue)
     // if (typeof currentValue !== 'number') throw new Error('VARIABLE must be number')
 
-    ctx.heap.set(variable.name, Number(currentValue) + value);
+    ctx.heap.set(variable.value as string, newValue);
+    // console.log("variable finally: ", variable, ctx.heap.get(variable.name))
   },
   setvariableto: (ctx: DispatchContext) => {
     const variable = ctx.getField('VARIABLE');
